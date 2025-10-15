@@ -12,15 +12,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hurreytech.stopwatch.ui.components.StopwatchButton
 import com.hurreytech.stopwatch.viewmodel.StopwatchViewModel
 
 @Composable
-fun StopwatchScreen(vm: StopwatchViewModel = viewModel()) {
-    val elapsedTime by vm.elapsedTime.collectAsState()
-    val isRunning by vm.isRunning.collectAsState()
-    val laps by vm.laps.collectAsState()
+fun StopwatchScreen(
+    viewModel: StopwatchViewModel = hiltViewModel()
+) {
+    val elapsedTime by viewModel.elapsedTime.collectAsState()
+    val isRunning by viewModel.isRunning.collectAsState()
+    val laps by viewModel.laps.collectAsState()
 
     Column(
         modifier = Modifier
@@ -45,15 +47,15 @@ fun StopwatchScreen(vm: StopwatchViewModel = viewModel()) {
                 text = if (isRunning) "Stop" else "Start",
                 color = if (isRunning) Color.Red else Color.Green
             ) {
-                if (isRunning) vm.stop() else vm.start()
+                if (isRunning) viewModel.stop() else viewModel.start()
             }
 
             StopwatchButton(text = "Lap", color = Color.Cyan) {
-                vm.recordLap()
+                viewModel.recordLap()
             }
 
             StopwatchButton(text = "Reset", color = Color.Yellow) {
-                vm.reset()
+                viewModel.reset()
             }
         }
 

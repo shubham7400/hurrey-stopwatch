@@ -2,13 +2,19 @@ package com.hurreytech.stopwatch.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hurreytech.stopwatch.domain.repository.StopwatchRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class StopwatchViewModel : ViewModel() {
+@HiltViewModel
+class StopwatchViewModel @Inject constructor(
+    private val repository: StopwatchRepository
+) : ViewModel() {
 
     private var job: Job? = null
     private var startTime = 0L
