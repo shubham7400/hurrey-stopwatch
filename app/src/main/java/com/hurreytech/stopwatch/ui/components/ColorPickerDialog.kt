@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun ColorPickerDialog(
     initialDigitColor: Color,
@@ -32,6 +31,7 @@ fun ColorPickerDialog(
     onDismiss: () -> Unit,
     onSave: (Color, Color, Color) -> Unit
 ) {
+    // Local state for the selected colors
     var digitColor by remember { mutableStateOf(initialDigitColor) }
     var backgroundColor by remember { mutableStateOf(initialBackgroundColor) }
     var buttonColor by remember { mutableStateOf(initialButtonColor) }
@@ -42,9 +42,11 @@ fun ColorPickerDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
+                // Digit color selection
                 Text("Digit Color")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(Color.White, Color.Yellow, Color.Cyan, Color.Green, Color.Red).forEach { color ->
+                    val digitOptions = listOf(Color.White, Color.Yellow, Color.Cyan, Color.Green, Color.Red)
+                    digitOptions.forEach { color ->
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
@@ -62,9 +64,11 @@ fun ColorPickerDialog(
                     }
                 }
 
+                // Background color selection
                 Text("Background Color")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(Color.Black, Color.DarkGray, Color.Blue, Color(0xFF222222), Color(0xFF101010)).forEach { color ->
+                    val backgroundOptions = listOf(Color.Black, Color.DarkGray, Color.Blue, Color(0xFF222222), Color(0xFF101010))
+                    backgroundOptions.forEach { color ->
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
@@ -82,9 +86,11 @@ fun ColorPickerDialog(
                     }
                 }
 
+                // Button color selection
                 Text("Button Color")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(Color(0xFF00C853), Color.Red, Color.Blue, Color.Magenta, Color.Yellow).forEach { color ->
+                    val buttonOptions = listOf(Color(0xFF00C853), Color.Red, Color.Blue, Color.Magenta, Color.Yellow)
+                    buttonOptions.forEach { color ->
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
@@ -103,12 +109,14 @@ fun ColorPickerDialog(
                 }
             }
         },
+        // Confirm button saves the selected colors
         confirmButton = {
             Button(onClick = {
                 onSave(digitColor, backgroundColor, buttonColor)
                 onDismiss()
             }) { Text("Save") }
         },
+        // Cancel button closes the dialog without saving
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }
         }
