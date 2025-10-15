@@ -22,11 +22,11 @@ import com.hurreytech.stopwatch.utils.formatTime
 import com.hurreytech.stopwatch.viewmodel.StopwatchViewModel
 
 
-
 @Composable
 fun StopwatchScreen(
     viewModel: StopwatchViewModel = hiltViewModel()
 ) {
+    // Collect UI state from the ViewModel
     val elapsedTime by viewModel.elapsedTime.collectAsState()
     val isRunning by viewModel.isRunning.collectAsState()
     val laps by viewModel.laps.collectAsState()
@@ -36,12 +36,13 @@ fun StopwatchScreen(
 
     var showDialog by remember { mutableStateOf(false) }
 
-    // Animate digit scale
+    // Animate the stopwatch digits scaling when running
     val digitScale by animateFloatAsState(
         targetValue = if (isRunning) 1.1f else 1f,
         animationSpec = tween(durationMillis = 300)
     )
 
+    // Main container
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -55,17 +56,17 @@ fun StopwatchScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Customize button at top
+            // Top-right customization button
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = { showDialog = true }) {
-                    Text("⚙ Customize", color = Color.LightGray)
+                    Text("Customize", color = Color.LightGray)
                 }
             }
 
-            // Stopwatch display with scale animation
+            // Stopwatch digits with scale animation
             Text(
                 text = formatTime(elapsedTime),
                 color = digitColor,
@@ -77,22 +78,18 @@ fun StopwatchScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Buttons
+            // Stopwatch control buttons: Start/Stop, Reset, Lap
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = {
-                        if (isRunning) viewModel.stop() else viewModel.start()
-                    },
+                    onClick = { if (isRunning) viewModel.stop() else viewModel.start() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isRunning) Color.Red else buttonColor
                     ),
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = if (isRunning) "Stop" else "Start")
-                }
+                ) { Text(text = if (isRunning) "Stop" else "Start") }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -100,9 +97,7 @@ fun StopwatchScreen(
                     onClick = { viewModel.reset() },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "Reset")
-                }
+                ) { Text(text = "Reset") }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -110,14 +105,12 @@ fun StopwatchScreen(
                     onClick = { if (isRunning) viewModel.recordLap() },
                     colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "Lap")
-                }
+                ) { Text(text = "Lap") }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Laps
+            // Lap list title
             Text(
                 text = "Laps",
                 color = Color.LightGray,
@@ -126,6 +119,7 @@ fun StopwatchScreen(
                 modifier = Modifier.align(Alignment.Start)
             )
 
+            // List of recorded laps with fade/slide animation (if animateItem is implemented)
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,6 +141,7 @@ fun StopwatchScreen(
         }
     }
 
+    // Color customization dialog
     if (showDialog) {
         ColorPickerDialog(
             initialDigitColor = digitColor,
