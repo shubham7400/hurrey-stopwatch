@@ -1,11 +1,16 @@
 package com.hurreytech.stopwatch.ui
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -13,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hurreytech.stopwatch.ui.components.ColorPickerDialog
-import com.hurreytech.stopwatch.ui.components.LapList
 import com.hurreytech.stopwatch.utils.formatTime
 import com.hurreytech.stopwatch.viewmodel.StopwatchViewModel
+
 
 
 @Composable
@@ -31,6 +36,12 @@ fun StopwatchScreen(
 
     var showDialog by remember { mutableStateOf(false) }
 
+    // Animate digit scale
+    val digitScale by animateFloatAsState(
+        targetValue = if (isRunning) 1.1f else 1f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +55,7 @@ fun StopwatchScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ⚙ Customize button at top
+            // Customize button at top
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -54,14 +65,17 @@ fun StopwatchScreen(
                 }
             }
 
-            // Stopwatch display
+            // Stopwatch display with scale animation
             Text(
                 text = formatTime(elapsedTime),
                 color = digitColor,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.scale(digitScale)
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Buttons
             Row(
@@ -101,6 +115,8 @@ fun StopwatchScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Laps
             Text(
                 text = "Laps",
@@ -110,7 +126,24 @@ fun StopwatchScreen(
                 modifier = Modifier.align(Alignment.Start)
             )
 
-            LapList(laps = laps, textColor = digitColor)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                itemsIndexed(laps, key = { index, _ -> index }) { index, lap ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .animateItem(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "Lap ${index + 1}", color = digitColor)
+                        Text(text = lap, color = digitColor)
+                    }
+                }
+            }
         }
     }
 
