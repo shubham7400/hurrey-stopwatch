@@ -12,13 +12,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hurreytech.stopwatch.ui.components.StopwatchButton
+import com.hurreytech.stopwatch.viewmodel.StopwatchViewModel
 
 @Composable
-fun StopwatchScreen() {
-    var isRunning by remember { mutableStateOf(false) }
-    var elapsedTime by remember { mutableStateOf(0L) }
-    val laps = remember { mutableStateListOf<Long>() }
+fun StopwatchScreen(vm: StopwatchViewModel = viewModel()) {
+    val elapsedTime by vm.elapsedTime.collectAsState()
+    val isRunning by vm.isRunning.collectAsState()
+    val laps by vm.laps.collectAsState()
 
     Column(
         modifier = Modifier
@@ -43,24 +45,22 @@ fun StopwatchScreen() {
                 text = if (isRunning) "Stop" else "Start",
                 color = if (isRunning) Color.Red else Color.Green
             ) {
-                isRunning = !isRunning
+                if (isRunning) vm.stop() else vm.start()
             }
 
             StopwatchButton(text = "Lap", color = Color.Cyan) {
-                if (isRunning) laps.add(elapsedTime)
+                vm.recordLap()
             }
 
             StopwatchButton(text = "Reset", color = Color.Yellow) {
-                isRunning = false
-                elapsedTime = 0L
-                laps.clear()
+                vm.reset()
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         LazyColumn {
-            items(laps) { lap ->
+            items(laps.reversed()) { lap ->
                 Text(
                     text = "Lap: ${formatTime(lap)}",
                     color = Color.White,
