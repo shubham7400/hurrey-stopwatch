@@ -20,7 +20,6 @@ local.properties
 
 # Sign-in credentials or local environment variables
 .env
-*.properties
 
 # Generated APKs / Bundles
 *.apk
