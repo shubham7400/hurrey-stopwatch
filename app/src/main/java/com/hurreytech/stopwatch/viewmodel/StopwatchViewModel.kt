@@ -1,9 +1,10 @@
 package com.hurreytech.stopwatch.viewmodel
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hurreytech.stopwatch.data.datastore.DataStoreManager
-import com.hurreytech.stopwatch.domain.repository.StopwatchRepository
 import com.hurreytech.stopwatch.utils.formatTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -31,6 +32,15 @@ class StopwatchViewModel @Inject constructor(
     private val _laps = MutableStateFlow<List<String>>(emptyList())
     val laps: StateFlow<List<String>> = _laps
 
+    private val _digitColor = MutableStateFlow(Color.White)
+    val digitColor: StateFlow<Color> = _digitColor
+
+    private val _backgroundColor = MutableStateFlow(Color(0xFF101010))
+    val backgroundColor: StateFlow<Color> = _backgroundColor
+
+    private val _buttonColor = MutableStateFlow(Color(0xFF00C853))
+    val buttonColor: StateFlow<Color> = _buttonColor
+
     init {
         // Load saved state when ViewModel is created
         viewModelScope.launch {
@@ -39,6 +49,23 @@ class StopwatchViewModel @Inject constructor(
 
         viewModelScope.launch {
             dataStoreManager.lapsFlow.collect { _laps.value = it }
+        }
+
+        viewModelScope.launch {
+            launch { dataStoreManager.digitColorFlow.collect { _digitColor.value = Color(it) } }
+            launch { dataStoreManager.backgroundColorFlow.collect { _backgroundColor.value = Color(it) } }
+            launch { dataStoreManager.buttonColorFlow.collect { _buttonColor.value = Color(it) } }
+        }
+    }
+
+
+    fun saveColorSettings(digitColor: Color, backgroundColor: Color, buttonColor: Color) {
+        viewModelScope.launch {
+            dataStoreManager.saveColors(
+                digitColor.toArgb(),
+                backgroundColor.toArgb(),
+                buttonColor.toArgb()
+            )
         }
     }
 

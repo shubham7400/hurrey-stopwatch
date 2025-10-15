@@ -1,6 +1,8 @@
 package com.hurreytech.stopwatch.data.datastore
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,6 +20,28 @@ class DataStoreManager @Inject constructor(
 
     private val ELAPSED_TIME_KEY = longPreferencesKey("elapsed_time")
     private val LAPS_KEY = stringSetPreferencesKey("laps")
+
+    private val DIGIT_COLOR_KEY = intPreferencesKey("digit_color")
+    private val BACKGROUND_COLOR_KEY = intPreferencesKey("background_color")
+    private val BUTTON_COLOR_KEY = intPreferencesKey("button_color")
+
+    val digitColorFlow: Flow<Int> = context.dataStore.data
+        .map { it[DIGIT_COLOR_KEY] ?: Color.White.toArgb() }
+
+    val backgroundColorFlow: Flow<Int> = context.dataStore.data
+        .map { it[BACKGROUND_COLOR_KEY] ?: Color(0xFF101010).toArgb() }
+
+    val buttonColorFlow: Flow<Int> = context.dataStore.data
+        .map { it[BUTTON_COLOR_KEY] ?: Color(0xFF00C853).toArgb() }
+
+    suspend fun saveColors(digitColor: Int, backgroundColor: Int, buttonColor: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[DIGIT_COLOR_KEY] = digitColor
+            prefs[BACKGROUND_COLOR_KEY] = backgroundColor
+            prefs[BUTTON_COLOR_KEY] = buttonColor
+        }
+    }
+
 
     // Save elapsed time
     suspend fun saveElapsedTime(time: Long) {
