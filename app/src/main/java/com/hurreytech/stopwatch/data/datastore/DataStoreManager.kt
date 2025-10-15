@@ -56,7 +56,7 @@ class DataStoreManager @Inject constructor(
 
     suspend fun saveLaps(laps: List<String>) {
         context.dataStore.edit { prefs ->
-            prefs[LAPS_KEY] = laps.toSet() // ✅ must be Set<String>
+            prefs[LAPS_KEY] = laps.toSet()
         }
     }
 
