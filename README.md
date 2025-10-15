@@ -1,29 +1,11 @@
-# README #
+# Custom Android Stopwatch
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is a custom Android stopwatch app implemented in Kotlin using Jetpack Compose. The app provides a digital stopwatch with lap tracking, customizable appearance, and smooth animations. Stopwatch state is persisted using DataStore, allowing the timer and laps to be restored after app restarts.
 
-### What is this repository for? ###
+## Features
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+- **Start, Stop, and Reset:** Control the stopwatch with simple buttons.
+- **Lap Timing:** Record lap times while the stopwatch is running.
+- **Custom Styling:** Customize the colors of digits, background, and buttons.
+- **Persistence:** Stopwatch time and laps are saved when the app is closed and restored on reopening.
+- **Animations:** Smooth animations for starting, stopping, resetting, and displaying laps.  
