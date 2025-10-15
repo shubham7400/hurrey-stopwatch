@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hurreytech.stopwatch.ui.components.StopwatchButton
+import com.hurreytech.stopwatch.utils.formatTime
 import com.hurreytech.stopwatch.viewmodel.StopwatchViewModel
 
 @Composable
@@ -64,7 +65,7 @@ fun StopwatchScreen(
         LazyColumn {
             items(laps.reversed()) { lap ->
                 Text(
-                    text = "Lap: ${formatTime(lap)}",
+                    text = "Lap: $lap",
                     color = Color.White,
                     modifier = Modifier.padding(4.dp)
                 )
@@ -73,10 +74,4 @@ fun StopwatchScreen(
     }
 }
 
-private fun formatTime(timeMillis: Long): String {
-    val totalSeconds = timeMillis / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    val millis = (timeMillis % 1000) / 10
-    return "%02d:%02d:%02d".format(minutes, seconds, millis)
-}
+

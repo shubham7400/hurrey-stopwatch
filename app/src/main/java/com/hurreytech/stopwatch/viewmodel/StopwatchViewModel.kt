@@ -2,7 +2,9 @@ package com.hurreytech.stopwatch.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hurreytech.stopwatch.data.datastore.DataStoreManager
 import com.hurreytech.stopwatch.domain.repository.StopwatchRepository
+import com.hurreytech.stopwatch.utils.formatTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -13,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StopwatchViewModel @Inject constructor(
-    private val repository: StopwatchRepository
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private var job: Job? = null
@@ -26,8 +28,19 @@ class StopwatchViewModel @Inject constructor(
     private val _isRunning = MutableStateFlow(false)
     val isRunning: StateFlow<Boolean> = _isRunning
 
-    private val _laps = MutableStateFlow<List<Long>>(emptyList())
-    val laps: StateFlow<List<Long>> = _laps
+    private val _laps = MutableStateFlow<List<String>>(emptyList())
+    val laps: StateFlow<List<String>> = _laps
+
+    init {
+        // Load saved state when ViewModel is created
+        viewModelScope.launch {
+            dataStoreManager.elapsedTimeFlow.collect { _elapsedTime.value = it }
+        }
+
+        viewModelScope.launch {
+            dataStoreManager.lapsFlow.collect { _laps.value = it }
+        }
+    }
 
     fun start() {
         if (_isRunning.value) return
@@ -51,17 +64,27 @@ class StopwatchViewModel @Inject constructor(
     }
 
     fun reset() {
-        job?.cancel()
         _isRunning.value = false
-        startTime = 0L
-        accumulatedTime = 0L
+        job?.cancel() // stop any running timer
         _elapsedTime.value = 0L
+        accumulatedTime = 0L // Reset accumulated time too
         _laps.value = emptyList()
+        viewModelScope.launch {
+            dataStoreManager.saveElapsedTime(0L)
+            dataStoreManager.saveLaps(emptyList())
+        }
     }
 
     fun recordLap() {
-        if (_isRunning.value) {
-            _laps.value = _laps.value + _elapsedTime.value
+        val newLap = formatTime(_elapsedTime.value)
+        _laps.value += newLap
+        viewModelScope.launch {
+            dataStoreManager.saveLaps(_laps.value)
+        }
+    }
+    fun saveElapsedTime() {
+        viewModelScope.launch {
+            dataStoreManager.saveElapsedTime(_elapsedTime.value)
         }
     }
 }
